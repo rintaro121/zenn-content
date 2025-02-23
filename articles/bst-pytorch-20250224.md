@@ -7,7 +7,6 @@ published: false
 ---
 
 # はじめに
-
 この記事では、Alibabaが提案した「**Behavior Sequence Transformer (BST)**」というモデルについて解説し、その実装をMovieLensデータセットに適用した例を紹介します。
 
 以下は実装です。  
@@ -27,7 +26,6 @@ A/Bテストでは、AlibabaのE-commerceプラットフォームで検証を行
 Alibabaが持つ、数億規模のユーザ/アイテムに対しても運用可能、というのもポイントです。
 
 ## 手法
-
 BSTは名前の通り、Transformerを利用したモデルになっています。
 
 入力は以下の三つです  
@@ -42,11 +40,8 @@ BSTは名前の通り、Transformerを利用したモデルになっています
 ![bstのアーキテクチャ](/images/bst/bst.png)
 
 # BSTの実装
-
 次にMovieLensデータセットを使った簡単な実装について解説します。
-
 ## データの概要
-
 MovieLensは、ユーザが映画に付けた評価データから成るデータセットになっており、以下のような情報を含んでいます。（詳しい定義は[MovieLensのREADME](https://files.grouplens.org/datasets/movielens/ml-1m-README.txt)をご覧ください。）
 
 **User Table**
@@ -68,9 +63,7 @@ MovieLensは、ユーザが映画に付けた評価データから成るデー�
 | 1 | 661 | 3 | 978302109 |
 
 ## **データの準備**
-
 ### 行動シーケンスの作成
-
 ユーザの行動シーケンスは、評価をつけた時間のタイムスタンプを元に作成してます。
 
 | ユーザID | 評価をつけた映画IDの系列 |
@@ -123,13 +116,8 @@ Data Augmentation後
 movie_ids_seq = (
     movie_id_history.ravel().unfold(0, sequence_length, window_size).to(torch.int32)
 )
-
 ```
-
-
-
 ### Positive Sample・Negative Sampleの作成
-
 BSTで行うタスクは候補アイテム（Target Item）のクリック確率の予測ですが、作成したシーケンスにはユーザが実際にクリックしたアイテムしか含まれていません。
 
 なのでクリックしていないアイテムも負例として追加してあげる必要があります。
@@ -195,7 +183,6 @@ class BST(nn.Module):
 ```
 
 ## 損失
-
 1/0のクリック予測なので損失はBCELossで計算しています。
 
 ```python
