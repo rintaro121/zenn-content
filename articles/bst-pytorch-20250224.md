@@ -156,7 +156,7 @@ BSTのクラスは、embedding layer・transformer layer・mlp layerから構成
 
 という役割になっています。
 
-各layerの詳細な実装はmodel.pyをご覧ください。
+各layerの詳細な実装は[model.py](https://github.com/rintaro121/behavior-sequence-transformer-pytorch/blob/main/src/model.py)をご覧ください。
 
 ```python
 class BST(nn.Module):
