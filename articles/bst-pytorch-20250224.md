@@ -279,12 +279,11 @@ for batch in dataloader:
 ```
 
 ## 結果
-train/validationのlossとvalidationのaccuracyを可視化しています。
-
-mlflowを使って、以下のコマンドから確認できます。
-
+mlflowを使って、以下のコマンドから学習結果を確認できます。
 ```bash
 poetry run mlflow ui
 ```
+
+train/validationのlossとvalidationのaccuracyをロギングしており、accuracyが上がっていることを確認できますね!
 
 ![experiment results](/images/bst/metrics.png)
