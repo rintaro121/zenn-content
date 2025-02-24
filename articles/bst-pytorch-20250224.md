@@ -202,7 +202,7 @@ class EmbeddingLayer(nn.Module):
         self,
         user_feat,
         seq_item,
-        target_item,
+        target_item
     ):
         # Get user embeddings
         user_id, sex, age, occupation = user_feat
