@@ -10,11 +10,13 @@ published: false
 この記事では、Alibabaが提案した「**Behavior Sequence Transformer (BST)**」というモデルについて解説し、その実装をMovieLensデータセットに適用した例を紹介します。
 
 以下は実装です。  
-Google colab：  
-https://colab.research.google.com/drive/1gv3jAHTLgVChAlw7JyRFM5YTGrCX1PIF?usp=sharing
 
 Repository：  
 https://github.com/rintaro121/behavior-sequence-transformer-pytorch
+
+Google colab：  
+https://colab.research.google.com/drive/1gv3jAHTLgVChAlw7JyRFM5YTGrCX1PIF?usp=sharing
+
 
 # **Behavior Sequence Transformer (BST)**
 URL：[Behavior Sequence Transformer for E-commerce Recommendation in Alibaba](https://arxiv.org/abs/1905.06874)
