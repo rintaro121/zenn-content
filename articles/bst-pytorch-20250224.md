@@ -3,7 +3,7 @@ title: "Alibabaの推薦システムBehavior Sequence Transformer"
 emoji: "🎴"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["推薦システム", "Pytorch", "深層学習"]
-published: false
+published: true
 ---
 
 # はじめに
