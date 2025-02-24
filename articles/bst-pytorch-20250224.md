@@ -10,7 +10,7 @@ published: false
 この記事では、Alibabaが提案した「**Behavior Sequence Transformer (BST)**」というモデルについて解説し、その実装をMovieLensデータセットに適用した例を紹介します。
 
 以下は実装です。  
-Google colab：  
+Google colab：
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1gv3jAHTLgVChAlw7JyRFM5YTGrCX1PIF?usp=sharing)
 
 Repository：  
@@ -193,17 +193,10 @@ class EmbeddingLayer(nn.Module):
         self.user_embedding = nn.Embedding(cfg.num_user, cfg.user_emb_dim)
         self.sex_embedding = nn.Embedding(cfg.num_sex, cfg.sex_emb_dim)
         self.age_embedding = nn.Embedding(cfg.num_age_group, cfg.age_group_emb_dim)
-        self.occupation_embedding = nn.Embedding(
-            cfg.num_occupation, cfg.occupation_emb_dim
-        )
+        self.occupation_embedding = nn.Embedding(cfg.num_occupation, cfg.occupation_emb_dim)
         self.movie_embedding = nn.Embedding(cfg.num_movie, cfg.movie_emb_dim)
 
-    def forward(
-        self,
-        user_feat,
-        seq_item,
-        target_item
-    ):
+    def forward(self, user_feat, seq_item, target_item):
         # Get user embeddings
         user_id, sex, age, occupation = user_feat
         user_emb = self.user_embedding(user_id)
