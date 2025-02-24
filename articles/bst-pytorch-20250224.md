@@ -11,7 +11,7 @@ published: false
 
 以下は実装です。  
 Google colab：  
-https://colab.research.google.com/drive/1gv3jAHTLgVChAlw7JyRFM5YTGrCX1PIF?usp=sharing
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1gv3jAHTLgVChAlw7JyRFM5YTGrCX1PIF?usp=sharing)
 
 Repository：  
 https://github.com/rintaro121/behavior-sequence-transformer-pytorch
@@ -180,6 +180,91 @@ class BST(nn.Module):
 
         p_ctr = self.mlp_layer(concat_feat)
         return p_ctr
+```
+
+embedding layer、transformer layer、mlp layerの定義はそれそれ以下のようになってます。
+
+```python
+class EmbeddingLayer(nn.Module):
+    def __init__(self, cfg):
+        super().__init__()
+        self.cfg = cfg
+
+        self.user_embedding = nn.Embedding(cfg.num_user, cfg.user_emb_dim)
+        self.sex_embedding = nn.Embedding(cfg.num_sex, cfg.sex_emb_dim)
+        self.age_embedding = nn.Embedding(cfg.num_age_group, cfg.age_group_emb_dim)
+        self.occupation_embedding = nn.Embedding(
+            cfg.num_occupation, cfg.occupation_emb_dim
+        )
+        self.movie_embedding = nn.Embedding(cfg.num_movie, cfg.movie_emb_dim)
+
+    def forward(
+        self,
+        user_feat,
+        seq_item,
+        target_item,
+    ):
+        # Get user embeddings
+        user_id, sex, age, occupation = user_feat
+        user_emb = self.user_embedding(user_id)
+        sex_emb = self.sex_embedding(sex)
+        age_emb = self.age_embedding(age)
+        occupation_emb = self.occupation_embedding(occupation)
+
+        # Get movie embedding
+        seq_item_emb = self.movie_embedding(seq_item)
+        target_item_emb = self.movie_embedding(target_item)
+
+        user_feat = torch.concat([user_emb, sex_emb, age_emb, occupation_emb], dim=-1)
+
+        return user_feat, seq_item_emb, target_item_emb
+
+
+class TransformerLayer(nn.Module):
+    def __init__(self, cfg):
+        super().__init__()
+
+        self.pe = PositionalEncoding(
+            d_model=cfg.d_model,
+            dropout=cfg.dropout_rate,
+            max_len=cfg.seq_len,
+        )
+
+        encoder_layer = nn.TransformerEncoderLayer(
+            d_model=cfg.d_model,
+            nhead=cfg.nhead,
+            dim_feedforward=cfg.dim_feedforward,
+            dropout=cfg.dropout_rate,
+            batch_first=True,
+        )
+        self.transformer_encoder = nn.TransformerEncoder(
+            encoder_layer=encoder_layer, num_layers=2
+        )
+
+    def forward(self, movie_seq_emb):
+        x = self.pe(movie_seq_emb)
+        enc_out = self.transformer_encoder(x)[:, -1, :]
+        return enc_out
+
+
+class MLPLayer(nn.Module):
+    def __init__(self, cfg):
+        super().__init__()
+        self.mlp = nn.Sequential(
+            nn.Linear(cfg.mlp_dim, cfg.mlp_hidden_1_dim),
+            nn.LeakyReLU(),
+            nn.Linear(cfg.mlp_hidden_1_dim, cfg.mlp_hidden_2_dim),
+            nn.LeakyReLU(),
+            nn.Linear(cfg.mlp_hidden_2_dim, cfg.mlp_hidden_3_dim),
+            nn.LeakyReLU(),
+            nn.Linear(cfg.mlp_hidden_3_dim, cfg.mlp_hidden_4_dim),
+            nn.Sigmoid(),
+        )
+
+    def forward(self, x):
+        output = self.mlp(x)
+        return output
+
 ```
 
 ## 損失
