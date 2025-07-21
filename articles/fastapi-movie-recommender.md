@@ -3,7 +3,7 @@ title: "FastAPI+RedsisでつくるレコメンドAPI"
 emoji: "🚀"
 type: "tech"
 topics: ["推薦システム", "FastAPI", "Redis"]
-published: false
+published: true
 ---
 
 # はじめに
