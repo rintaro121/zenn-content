@@ -36,7 +36,7 @@ movielens-recommend-api/
 # Redisについて
 今回扱うRedisについて簡単に紹介します。  
 
-RedisとはIn-memory型のデータストアです。In-memory型である（データがディスクではなくメモリ上に保持される）ことから、アクセスが非常に高速という特徴を持ってます。
+RedisとはIn-memory型のデータストアです。In-memory型である（ディスクではなくメモリ上でデータを保持する）ことから、アクセスが非常に高速という特徴を持ってます。
 
 文字列やハッシュ、セットなど色々なデータ構造をサポートしています。
 
@@ -44,7 +44,7 @@ RedisとはIn-memory型のデータストアです。In-memory型である（デ
 *[Redis Explained](https://architecturenotes.co/p/redis)より引用*
 
 
-また、[`redis-py`](https://github.com/redis/redis-py)という公式のPythonクライアントも提供されており、Pythonアプリケーションから簡単にredisを操作可能です。
+[`redis-py`](https://github.com/redis/redis-py)という公式のPythonクライアントも提供されており、Pythonアプリケーションから簡単にredisを操作可能です。
 ```python
 import redis
 
@@ -62,7 +62,7 @@ print(r.json().get('user:1', '$.emails[0]'))  # ['alice@example.com']
 print(r.json().get('user:1', '$.address.zip'))# ['10001']
 ```
 
-今回はレコメンドアイテムを格納するデータストアとしてredisを使用しています。また、レコメンド時にもredisにアクセスし、アイテムを返却します。
+今回はレコメンドアイテムを格納するデータストアとしてredisを使用しています。また、レコメンドアイテムを返却時にもredisにアクセスしています。
 
 # レコメンドAPIの実装
 ## 事前準備
@@ -83,7 +83,7 @@ tqdm
 
 ## STEP 2: データローディングスクリプトの作成
 ここでは、MovieLensのCSVデータをRedisに格納するためのスクリプトを作成します。
-このスクリプトはAPIサーバーの起動前に一度だけ実行します。
+このスクリプトはAPIサーバーの起動前に一度だけ実行されるようになっています。
 
 ```python:scripts/load_data.py
 import os
@@ -164,7 +164,7 @@ if __name__ == "__main__":
 
 #### 映画情報の保存（Hash）
 映画情報の保存は`Hash`というデータ型を用いて、個々の映画のタイトルやジャンルを格納しています。  
-Hashは、1つのキーに対して複数のフィールドと値のペアを保存できるデータ型で、movie:1というキーの中にtitleフィールドとgenresフィールドを持つ、といった構造になります（つまり映画IDを指定するだけで、その映画の全ての情報を取得可能です）。
+Hashは、1つのキーに対して複数のフィールドと値のペアを保存できるデータ型で、`movie:1`というキーの中に`title`フィールドと`genres`フィールドを持つ、といった構造になります（つまり映画IDを指定するだけで、その映画の全ての情報を取得可能です）。
 ```python
 redis_client.hset(
     f"movie:{movie_id}",
@@ -177,9 +177,9 @@ redis_client.hset(
 
 
 #### 評価データの保存 (Set)
-ここでは、誰が何をみたか、何を誰がみたか、という情報を登録しています。
+ここでは、誰が何をみたか、何を誰がみたか、という情報の登録をします。
 
-例えば、`user_ratings`では、「ユーザーID:1が見た映画一覧」のような情報を格納し、`movie_raters`では、「映画ID:2を見た全ユーザー」を格納します。
+例えば、`user_ratings`では、「ユーザーID:1が見た全ての映画ID」のような情報を格納し、`movie_raters`では、「映画ID:2を見た全てのユーザーID」を格納します。
 ```python
 # ユーザーが評価した映画リスト
 pipe.sadd(f"user_ratings:{user_id}", movie_id)
@@ -188,6 +188,10 @@ pipe.sadd(f"movie_raters:{movie_id}", user_id)
 ```
 #### Redisに対する一括書き込み (Pipeline)
 ここでは、`Pipeline`という機能を用いて、大量のコマンドを効率的に実行しています。  
+
+![pipeline](/images/fastapi-movie-recommender/pipeline.png)
+*pipelineの例 ([Redisパイプラインの概要、原則、例](https://www.alibabacloud.com/help/ja/redis/use-cases/use-pipelining-to-batch-issue-commands)より引用)*
+
 `ratings.csv`には約10万件のデータがあり、1件ずつRedisにコマンドを送ると10万往復のネットワーク通信が発生するので非常に時間がかかります。  
 Pipelineを用いることで、実行したい複数のコマンドを一旦クライアント側で溜めておき、`execute()`が呼ばれたタイミングで一括してサーバーに送信するようにします。  
 これによりネットワーク通信を1往復に抑え、データ投入が爆速になります🚀
@@ -263,7 +267,7 @@ def get_movies_rated_by_users(redis_client: redis.Redis, user_ids: Set[str]) -> 
 
 レコメンドのロジックはシンプルなものになっており、ある映画IDに対して、同一映画を見たユーザの映画を全列挙していき、その回数をカウントするというものになっています。
 
-pythonの[Counter](https://docs.python.org/ja/3.13/library/collections.html#collections.Counter)クラスを使うと、この辺の処理が簡単に記述できて便利です。
+Pythonの[Counter](https://docs.python.org/ja/3.13/library/collections.html#collections.Counter)クラスを使うと、この辺の処理が簡単に記述できて便利です。
 
 ```python:app/services.py
 from collections import Counter
