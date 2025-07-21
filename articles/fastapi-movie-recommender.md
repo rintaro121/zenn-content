@@ -1,5 +1,5 @@
 ---
-title: "FastAPI+RedsisでつくるレコメンドAPI"
+title: "FastAPI+RedisでつくるレコメンドAPI"
 emoji: "🚀"
 type: "tech"
 topics: ["推薦システム", "FastAPI", "Redis"]
