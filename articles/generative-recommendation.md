@@ -6,7 +6,7 @@ topics: [Pytorch, Deep Learning, 推薦システム]
 published: false
 ---
 
-近年Meta[^1][^2]、ByteDance[^3]、Kuaishou[^4]、Google[^5]、Alibaba[^6]といったビッグテックの企業から、Generative Recommendationに関する手法が数多く発表されています。
+近年Meta[^1] [^2]、ByteDance[^3]、Kuaishou[^4]、Google[^5]、Alibaba[^6]といったビッグテックの企業から、Generative Recommendationに関する手法が数多く発表されています。
 これは、推薦システムの問題設定を新しい形で定義するもので、RecSys、CIKM、WWWなどの学会でもチュートリアルが開かれたりとホットなトピックになっています。
 
 この記事では、Generative Recommendationの概要からSemantic IDなどの構成要素の解説、そしてMovielensを使った実装まで紹介していこうと思います。
@@ -287,7 +287,6 @@ greedyな生成では、各stepで最も確率が高いtokenを1つピックア�
 今回はシンプルなDecoder-onlyモデルとgreedy decodingを用いましたが、Encoder-Decoder型のモデルに変更することや、beam searchによって複数候補を生成することで、さらなる精度改善が期待できます。
 
 
-### References
 [^1]: [Zhai, Jiaqi, et al. "Actions speak louder than words: Trillion-parameter sequential transducers for generative recommendations." _arXiv preprint arXiv:2402.17152_ (2024).](https://arxiv.org/abs/2402.17152)
 
 [^2]: [Zhang, Buyun, et al. "Wukong: Towards a scaling law for large-scale recommendation." _arXiv preprint arXiv:2403.02545_ (2024).](https://arxiv.org/abs/2403.02545)
