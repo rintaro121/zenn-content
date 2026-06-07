@@ -109,9 +109,9 @@ $L_{rqvae}$は、codebook内のベクトルがエンコーダによって生成�
 $$
 L_{\text{rqvae}} := \sum_{i=0}^{m-1} \left[ \|\text{sg}[r_i] - e_{c_i}\|^2 + \beta\|r_i - \text{sg}[e_{c_i}]\|^2 \right]
 $$
-1つ目の項（$|\text{sg}[r_i] - e_{c_i}|^2)$）は、codebook lossと呼ばれ、エンコーダの残差とcodebookのベクトルを計算します。残差（$r_i$）にcodebookの表現を近づけることを目的とするため、残差（$r_i$）に対しては勾配を止め、codebookのベクトルのみが更新対象になります。
+1つ目の項（$\|\text{sg}[r_i] - e_{c_i}\|^2$）は、codebook lossと呼ばれ、エンコーダの残差とcodebookのベクトルを計算します。残差（$r_i$）にcodebookの表現を近づけることを目的とするため、残差（$r_i$）に対しては勾配を止め、codebookのベクトルのみが更新対象になります。
 
-2つ目の項（$\beta|r_i - \text{sg}[e_{c_i}]|^2$）はcommitment lossと呼ばれ、ここではエンコーダが学習対象です。
+2つ目の項（$\beta\|r_i - \text{sg}[e_{c_i}]\|^2$）はcommitment lossと呼ばれ、ここではエンコーダが学習対象です。
 1つ目の項と同じ値を計算していますが、こちらはcodebookのベクトルに対して勾配を止めます。
 結果として、エンコーダの出力がcodebookのベクトルに近づくこと（よりコミットすること）を期待しています。
 ```python
@@ -145,7 +145,7 @@ commitment_loss = F.mse_loss(residual, selected.detach())
 ```
 [1, 1, 88, 0]
 ```
-ただし、このままでは 1つ目のIDと2つ目のIDが両方１なので、区別がつきません。
+ただし、このままでは 1つ目のIDと2つ目のIDが両方1なので、区別がつきません。
 そこで実装では、階層ごとに offset を足して、すべてのSemantic IDを一意のIDに変換しています。
 ```python
 # special tokens
